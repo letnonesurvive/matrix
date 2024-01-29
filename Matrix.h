@@ -4,114 +4,85 @@
 #include <vector>
 #include <stdexcept>
 
-template <class T>
+template <class T, T>
 class Matrix;
 
 template <class T>
-class ReadProxy {
-
+class ReadProxy
+{
 public:
-    ReadProxy (const Matrix<T>& theMatrix, size_t theIndex) : myMatrix(theMatrix), myIndex(theIndex) {}
-
-    const T& operator[](size_t theIndex) const
-    {
-        auto aRow = myMatrix.get_value(myIndex);
-        return aVar.get_value(theIndex);
-    }
-
+    ReadProxy() 
+    {}
 private:
-    const Matrix<T>& myMatrix;
-    size_t myIndex; // row's index
-};
-
-template <typename T>
-class WriteProxy {
-
-public:
-    WriteProxy(const Matrix<T>& theMatrix, size_t theIndex) : myMatrix(theMatrix), myIndex(theIndex) {}
-
-    T& operator[](size_t theIndex)
-    {
-        auto aRow = myMatrix.get_value (myIndex);
-        //Matrix<T>::MatrixRow aRow;
-
-    }
-
-private:
-    const Matrix<T>& myMatrix;
-    size_t myIndex; // row's index
+    size_t myRow, myColumn;
 };
 
 template <class T>
-class Matrix
+class WriteProxy
 {
 public:
-    Matrix(const T& theDefaultValue) 
+    WriteProxy()
+    {}
+private:
+    size_t myRow, myColumn;
+};
+
+template <class T, T theDefaultValue>
+class Matrix
+{
+public: 
+    Matrix()
     {
-        myDefaultValue = theDefaultValue;
+
     }
+
+    Matrix (const Matrix& m)
+    {
+        myValues = m.myValues;
+    }
+
+    Matrix& operator= (const Matrix& m)
+    {
+        myValues = m.myValues;
+    }
+
+    T get_default_value() const
+    {
+        return theDefaultValue;
+    }
+
     size_t size() const
     {
-        return myRows.size();
+        return myValues.size();
     }
 
-    T get_default_value () const
+    //T operator() (size_t theRow, size_t theCol) const
+    //{
+    //    //return ReadProxy<T>();
+    //    auto aPair = std::make_pair(theRow, theCol);
+    //    try {
+    //        auto aValue = myValues.at(aPair);
+    //        return aValue;
+    //    }
+    //    catch (...) {
+    //    }
+    //    return theDefaultValue;
+
+    //}
+
+    //T operator() (size_t theRow, size_t theCol)
+    //{
+    //    auto aPair = std::make_pair(theRow, theCol);
+    //    return myValues[aPair];
+    //}
+
+    T& operator() (size_t theRow, size_t theCol)
     {
-        return myDefalutValue;
+        auto aPair = std::make_pair(theRow, theCol);
+        return myValues[aPair];
     }
 
-    class MatrixRow
-    {
-    public:
-        MatrixRow()
-        {
-
-        }
-
-        const T& get_value (size_t theIndex) const
-        {
-            static T aRes = -1; // must be default value
-            try {
-                return myValues.at(theIndex);
-            }
-            catch (const std::out_of_range) {
-            }
-            return aRes;
-        }
-
-
-    private:
-        std::map<size_t, T> myValues;
-    };
-
-
-    ReadProxy<T> operator[](size_t theIndex) const
-    {
-        return ReadProxy<T>(*this, theIndex);
-    }
-
-    const MatrixRow& get_value(size_t theIndex) const
-    {
-        static MatrixRow aRes;
-        try {
-            return myRows.at(theIndex);
-        }
-        catch (const std::out_of_range) {
-        }
-        return aRes;
-    }
-
-    void set_value(size_t theIndex, const T& theValue)
-    {
-        myRows[index]
-    }
-
-    WriteProxy<T> operator[](size_t theIndex)
-    {
-        return WriteProxy<T>(*this, theIndex);
-    }
 
 private:
-    T myDefaultValue;
-    std::map<size_t, MatrixRow> myRows;
+    std::map <std::pair <size_t, size_t>, T> myValues;
 };
