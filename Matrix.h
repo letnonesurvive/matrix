@@ -3,47 +3,49 @@
 #include <map>
 #include <vector>
 #include <stdexcept>
+#include <ostream>
 
-template <class T, T>
-class Matrix;
-
-template <class T>
-class ReadProxy
+class Cell
 {
 public:
-    ReadProxy() 
-    {}
-private:
-    size_t myRow, myColumn;
-};
+    Cell() {};
+    
+    Cell(size_t _x, size_t _y): x(_x), y(_y) {};
 
-template <class T>
-class WriteProxy
-{
-public:
-    WriteProxy()
-    {}
+    size_t X() const
+    {
+        return x;
+    }
+
+    size_t Y() const
+    {
+        return y;
+    }
+
 private:
-    size_t myRow, myColumn;
+    size_t x;
+    size_t y;
 };
 
 template <class T, T theDefaultValue>
 class Matrix
 {
+    using CellType = std::pair <size_t, size_t>;
+
 public: 
-    Matrix()
+    Matrix() : myMaxRowIndex(0), myMaxColIndex(0)
     {
 
     }
 
-    Matrix (const Matrix& m)
+    auto begin() const
     {
-        myValues = m.myValues;
+        return myValues.begin();
     }
 
-    Matrix& operator= (const Matrix& m)
+    auto end() const
     {
-        myValues = m.myValues;
+        return myValues.end();
     }
 
     T get_default_value() const
@@ -51,38 +53,83 @@ public:
         return theDefaultValue;
     }
 
-    size_t size() const
+    size_t size()
     {
+        std::vector <CellType> anErasedValues;
+
+        for (const auto &aPair : myValues) {
+            if (aPair.second == theDefaultValue) {
+                const auto& aCell = aPair.first;
+                anErasedValues.push_back (aCell);
+            }
+        }
+
+        for (const auto& aVariable : anErasedValues) {
+            myValues.erase (aVariable);
+        }
+
         return myValues.size();
     }
 
-    //T operator() (size_t theRow, size_t theCol) const
-    //{
-    //    //return ReadProxy<T>();
-    //    auto aPair = std::make_pair(theRow, theCol);
-    //    try {
-    //        auto aValue = myValues.at(aPair);
-    //        return aValue;
-    //    }
-    //    catch (...) {
-    //    }
-    //    return theDefaultValue;
+    const T operator() (size_t theRow, size_t theCol) const
+    {
+        auto aPair = std::make_pair (theRow, theCol);
+        try {
+            return myValues.at (aPair);
+        }
+        catch (std::out_of_range) {
 
-    //}
-
-    //T operator() (size_t theRow, size_t theCol)
-    //{
-    //    auto aPair = std::make_pair(theRow, theCol);
-    //    return myValues[aPair];
-    //}
+        }
+        return theDefaultValue;
+    }
 
     T& operator() (size_t theRow, size_t theCol)
     {
-        auto aPair = std::make_pair(theRow, theCol);
+        calculate_max_indeces (theRow, theCol);
+        auto aPair = std::make_pair (theRow, theCol);
+        myValues[aPair] = theDefaultValue;
         return myValues[aPair];
     }
 
+    void Print (CellType& from, CellType& to) const
+    {
+        if (to.first < from.first || to.second < from.second) {
+            throw std::logic_error ("The second cell less then first");
+        }
+
+        for (size_t i = from.first; i <= to.first; ++i) {
+            for (size_t j = from.second; j <= to.second; ++j) {
+                std::cout << this->operator()(i, j) << ' ';
+            }
+            std::cout << std::endl;
+        }
+    }
+
+    friend std::ostream& operator<< (std::ostream& os, const Matrix& theMatrix)
+    {
+        for (size_t i = 0; i <= theMatrix.myMaxRowIndex; ++i) {
+            for (size_t j = 0; j <= theMatrix.myMaxColIndex; ++j) {
+                os << theMatrix (i, j) << ' ';
+            }
+            os << endl;
+        }
+        return os;
+    }
 
 private:
-    std::map <std::pair <size_t, size_t>, T> myValues;
+
+    void calculate_max_indeces (size_t theRow, size_t theCol)
+    {
+        if (theRow > myMaxRowIndex) {
+            myMaxRowIndex = theRow;
+        }
+        if (theCol > myMaxColIndex) {
+            myMaxColIndex = theCol;
+        }
+    }
+
+private:
+    std::map <CellType, T> myValues;
+    size_t myMaxRowIndex;
+    size_t myMaxColIndex;
 };
