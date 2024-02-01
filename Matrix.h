@@ -26,7 +26,6 @@ public:
 
     class matrix_iterator
     {
-        using CellType = std::pair <size_t, size_t>;
     public:
         matrix_iterator() {}
 
@@ -41,15 +40,18 @@ public:
             return *this;
         }
 
-        bool operator== (const matrix_iterator& other) const {
-            return myIt == other.myIt;
+        bool operator== (const matrix_iterator& theOther) const 
+        {
+            return myIt == theOther.myIt;
         }
 
-        bool operator!= (const matrix_iterator& other) const {
-            return myIt != other.myIt;
+        bool operator!= (const matrix_iterator& theOther) const 
+        {
+            return myIt != theOther.myIt;
         }
 
-        std::tuple<size_t, size_t, T> operator*() const {
+        std::tuple<size_t, size_t, T> operator*() const 
+        {
             return std::make_tuple (myIt->first.first, myIt->first.second, myIt->second);
         }
 
@@ -59,7 +61,7 @@ public:
 
     matrix_iterator begin()
     {
-        return matrix_iterator(myValues.begin());
+        return matrix_iterator (myValues.begin());
     }
 
     matrix_iterator end()
