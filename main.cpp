@@ -6,7 +6,13 @@ using namespace std;
 
 int main()
 { 
+    // попробовать на одномерном массиве реализовать два прокси для чтения и записи данных через оператор []
+    // если работает то перенести реилзацию на двумерный массив
     Matrix<int, 0> aMatrix;
+
+    assert(aMatrix.size() == 0);
+
+    auto aValue = aMatrix(1, 1);
 
     assert(aMatrix.size() == 0);
 
@@ -22,11 +28,11 @@ int main()
     std::pair<size_t, size_t> to = { 8,8 };
     aMatrix.Print (from, to);
 
-
     for (const auto& anElement : aMatrix) {
-        size_t x = anElement.first.first;
-        size_t y = anElement.first.second;
-        auto value = anElement.second;
+        size_t x;
+        size_t y;
+        int value;
+        std::tie (x, y, value) = anElement;
         cout << "[" << x << ',' << y << "] = " << value << endl;
     }
 

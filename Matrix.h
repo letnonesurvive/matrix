@@ -4,48 +4,67 @@
 #include <vector>
 #include <stdexcept>
 #include <ostream>
+#include <tuple>
 
-class Cell
-{
-public:
-    Cell() {};
-    
-    Cell(size_t _x, size_t _y): x(_x), y(_y) {};
+template <class T, T theDefaultValue>
+class Matrix;
 
-    size_t X() const
-    {
-        return x;
-    }
-
-    size_t Y() const
-    {
-        return y;
-    }
-
-private:
-    size_t x;
-    size_t y;
-};
+template <class T>
+class matrix_iterator;
 
 template <class T, T theDefaultValue>
 class Matrix
 {
+public:
     using CellType = std::pair <size_t, size_t>;
 
 public: 
     Matrix() : myMaxRowIndex(0), myMaxColIndex(0)
     {
 
+    };
+
+    class matrix_iterator
+    {
+        using CellType = std::pair <size_t, size_t>;
+    public:
+        matrix_iterator() {}
+
+        matrix_iterator (typename std::map<CellType, T>::iterator theIt)
+        {
+            myIt = theIt;
+        };
+
+        matrix_iterator& operator++()
+        {
+            ++myIt;
+            return *this;
+        }
+
+        bool operator== (const matrix_iterator& other) const {
+            return myIt == other.myIt;
+        }
+
+        bool operator!= (const matrix_iterator& other) const {
+            return myIt != other.myIt;
+        }
+
+        std::tuple<size_t, size_t, T> operator*() const {
+            return std::make_tuple (myIt->first.first, myIt->first.second, myIt->second);
+        }
+
+    private:
+        typename std::map<CellType, T>::iterator myIt;
+    };
+
+    matrix_iterator begin()
+    {
+        return matrix_iterator(myValues.begin());
     }
 
-    auto begin() const
+    matrix_iterator end()
     {
-        return myValues.begin();
-    }
-
-    auto end() const
-    {
-        return myValues.end();
+        return matrix_iterator (myValues.end());
     }
 
     T get_default_value() const
@@ -55,19 +74,7 @@ public:
 
     size_t size()
     {
-        std::vector <CellType> anErasedValues;
-
-        for (const auto &aPair : myValues) {
-            if (aPair.second == theDefaultValue) {
-                const auto& aCell = aPair.first;
-                anErasedValues.push_back (aCell);
-            }
-        }
-
-        for (const auto& aVariable : anErasedValues) {
-            myValues.erase (aVariable);
-        }
-
+        EraseExtraValues();
         return myValues.size();
     }
 
@@ -85,7 +92,7 @@ public:
 
     T& operator() (size_t theRow, size_t theCol)
     {
-        calculate_max_indeces (theRow, theCol);
+        calculate_max_indexes (theRow, theCol);
         auto aPair = std::make_pair (theRow, theCol);
         myValues[aPair] = theDefaultValue;
         return myValues[aPair];
@@ -118,7 +125,7 @@ public:
 
 private:
 
-    void calculate_max_indeces (size_t theRow, size_t theCol)
+    void calculate_max_indexes (size_t theRow, size_t theCol)
     {
         if (theRow > myMaxRowIndex) {
             myMaxRowIndex = theRow;
@@ -128,8 +135,26 @@ private:
         }
     }
 
+    void EraseExtraValues()
+    {
+        std::vector <CellType> anErasedValues;
+
+        for (const auto &aPair : myValues) {
+            if (aPair.second == theDefaultValue) {
+                const auto& aCell = aPair.first;
+                anErasedValues.push_back(aCell);
+            }
+        }
+
+        for (const auto& aVariable : anErasedValues) {
+            myValues.erase(aVariable);
+        }
+
+    }
+
 private:
     std::map <CellType, T> myValues;
     size_t myMaxRowIndex;
     size_t myMaxColIndex;
 };
+
