@@ -3,7 +3,7 @@
 #include <map>
 #include <vector>
 #include <stdexcept>
-#include <ostream>
+#include <iostream>
 #include <tuple>
 
 template <class T, T theDefaultValue>
@@ -86,7 +86,7 @@ public:
         try {
             return myValues.at (aPair);
         }
-        catch (std::out_of_range) {
+        catch (std::out_of_range&) {
 
         }
         return theDefaultValue;
@@ -120,7 +120,7 @@ public:
             for (size_t j = 0; j <= theMatrix.myMaxColIndex; ++j) {
                 os << theMatrix (i, j) << ' ';
             }
-            os << endl;
+            os << std::endl;
         }
         return os;
     }
