@@ -5,7 +5,7 @@ set(PROJECT_VESRION 0.0.${PATCH_VERSION})
 
 project(matrix VERSION ${PROJECT_VESRION})
 
-add_executable(matrix main.cpp Matrix.h Matrix.cpp)
+add_executable(matrix main.cpp Matrix.h)
 
 set_target_properties(matrix matrix PROPERTIES
     CXX_STANDARD 14
