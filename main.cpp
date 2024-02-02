@@ -36,7 +36,9 @@ int main()
         cout << "[" << x << ',' << y << "] = " << value << endl;
     }
 
-    cout << aMatrix << endl;
+    //cout << aMatrix << endl;
+
+    cout << aMatrix.size() << endl;
 
     assert(aMatrix.size() == 18);
 }
