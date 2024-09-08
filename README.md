@@ -1,25 +1,20 @@
-# Задание 6
+# Task
 
-Спроектировать 2-мерную разреженную бесконечную матрицу, заполненную значениями по
-умолчанию. Матрица должна хранить только занятые элементы - значения которых хотя бы раз
-присваивались. Присвоение в ячейку значения по умолчанию освобождает ячейку.
-Необходимо уметь отвечать на вопрос - сколько ячеек реально занято?
-Необходимо уметь проходить по всем занятым ячейкам. Порядок не имеет значения. Возвращается
-позиция ячейки и ее значение.
-При чтении элемента из свободной ячейки возвращать значение по умолчанию
+Design a 2-dimensional sparse infinite matrix filled with default values. The matrix should only store occupied elements—values that have been assigned at least once. Assigning a default value to a cell frees up the cell.
 
-Пример:
-```C++
-// бесконечная матрица int заполнена значениями -1
+You need to be able to answer the question: how many cells are actually occupied? You should also be able to iterate over all occupied cells. The order does not matter. Return the position of the cell and its value. When reading an element from a free cell, return the default value.
+
+```
+// Infinite matrix of int filled with -1
  Matrix<int, -1> matrix;
- assert(matrix.size() == 0); // все ячейки свободны
+ assert(matrix.size() == 0); // all cells are free
  auto a = matrix[0][0];
  assert(a == -1);
  assert(matrix.size() == 0);
  matrix[100][100] = 314;
  assert(matrix[100][100] == 314);
  assert(matrix.size() == 1);
- // выведется одна строка
+ // Output will be one line
  // 100100314
  for(auto c: matrix)
  {
@@ -31,14 +26,12 @@
  }
 ```
 
-При запуске программы необходимо создать матрицу с пустым значением 0, заполнить главную
-диагональ матрицы (от [0,0] до [9,9]) значениями от 0 до 9.
+When running the program, you need to create a matrix with a default value of 0, fill the main diagonal of the matrix (from [0,0] to [9,9]) with values from 0 to 9.
 
-Второстепенную диагональ (от [0,9] до [9,0]) значениями от 9 до 0.
+Fill the secondary diagonal (from [0,9] to [9,0]) with values from 9 to 0.
 
-Необходимо вывести фрагмент матрицы от [1,1] до [8,8]. Между столбцами пробел. Каждая строка
-матрицы на новой строке консоли.
+You need to output a fragment of the matrix from [1,1] to [8,8]. Use a space between columns. Each row of the matrix should be on a new line in the console.
 
-Вывести количество занятых ячеек.
+Output the number of occupied cells.
 
-Вывести все занятые ячейки вместе со своими позициями.
+Output all occupied cells along with their positions.
